@@ -1,17 +1,104 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <title>SQL Firewall Test</title>
+  <meta charset="utf-8">
+  <title>AI SQL Firewall Test</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8fafc;
+      padding: 40px;
+    }
+    .box {
+      max-width: 500px;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .safe {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .blocked {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>SQL Firewall Test</h2>
+<div class="box">
+  <h2>🛡️ AI SQL Firewall Test</h2>
 
-<form id="f">
-  <input type="text" placeholder="username"><br><br>
-  <input type="text" placeholder="SQL here"><br><br>
-  <button type="submit">Submit</button>
-</form>
+  <form id="f">
+    <input id="user" type="text" placeholder="Username" required>
+    <input id="sql" type="text" placeholder="Enter SQL query" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="result"></div>
+</div>
+
+<script>
+  const BACKEND_URL = "https://YOUR_BACKEND_URL/predict_sqli";
+
+  document.getElementById("f").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const sql = document.getElementById("sql").value;
+    const resultBox = document.getElementById("result");
+
+    resultBox.innerHTML = "⏳ Checking...";
+    resultBox.className = "result";
+
+    try {
+      const res = await fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: sql })
+      });
+
+      if (res.status === 403) {
+        const data = await res.json();
+        resultBox.classList.add("blocked");
+        resultBox.innerHTML = "🚨 BLOCKED: SQL Injection Detected";
+      } else {
+        const data = await res.json();
+        resultBox.classList.add("safe");
+        resultBox.innerHTML = "✅ ALLOWED: Input is Safe";
+      }
+
+    } catch (err) {
+      resultBox.classList.add("blocked");
+      resultBox.innerHTML = "❌ Backend not reachable";
+    }
+  });
+</script>
 
 </body>
 </html>
+
