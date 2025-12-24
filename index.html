@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8fafc;
+      background: #black;
       padding: 40px;
     }
     .box {
@@ -64,8 +64,8 @@
 </div>
 
 <script>
-  const BACKEND_URL = "const BACKEND_URL = "https://web-production-866d6.up.railway.app/predict_sqli";
-";
+  // ✅ CORRECT backend URL
+  const BACKEND_URL = "https://web-production-1a8f.up.railway.app/predict_sqli";
 
   document.getElementById("f").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -73,7 +73,7 @@
     const sql = document.getElementById("sql").value;
     const resultBox = document.getElementById("result");
 
-    resultBox.innerHTML = "⏳ Checking...";
+    resultBox.textContent = "⏳ Checking...";
     resultBox.className = "result";
 
     try {
@@ -84,22 +84,19 @@
       });
 
       if (res.status === 403) {
-        const data = await res.json();
         resultBox.classList.add("blocked");
-        resultBox.innerHTML = "🚨 BLOCKED: SQL Injection Detected";
+        resultBox.textContent = "🚨 BLOCKED: SQL Injection Detected";
       } else {
-        const data = await res.json();
         resultBox.classList.add("safe");
-        resultBox.innerHTML = "✅ ALLOWED: Input is Safe";
+        resultBox.textContent = "✅ ALLOWED: Input is Safe";
       }
 
     } catch (err) {
       resultBox.classList.add("blocked");
-      resultBox.innerHTML = "❌ Backend not reachable";
+      resultBox.textContent = "❌ Backend not reachable";
     }
   });
 </script>
 
 </body>
 </html>
-
